@@ -4,16 +4,17 @@ import axios from 'axios';
 
 export const getIBMdata = async () => {
   return await axios.get('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo').then((result: { data: { [s: string]: unknown; } | ArrayLike<unknown>; }) => ({
-    data: Object.values(Object.values(result.data)[1]),
-    time: Object.values(Object.values(result.data)[0]),
+    data: Object.values(Object.values(result.data)[1] as any),
+    time: Object.values(Object.values(result.data)[0] as any),
   }))
 }
 
 export const manipulateData = (dataArray: any) => (
   dataArray.data.map((element: any, index:number) => ({
     name: `${index >= 20 ? index/20 + 'h our(s)': index * 5 + 'mins'}`,
-    open: parseFloat(Object.values(element)[0]),
-    close: parseFloat(Object.values(element)[3])
+    //ts-ignore
+    open: parseFloat(Object.values(element)[0] as any),
+    close: parseFloat(Object.values(element)[3] as any)
   }))
 )
 
@@ -30,35 +31,38 @@ export const getMax = (APIData:any):number => {
 }
 
 export const getYmin = (arrayData:any) => {
-  const minOpening = getMin(arrayData.map(item => item.open));
-  const minClosing = getMin(arrayData.map(item => item.close));
+  const minOpening = getMin(arrayData.map((item: { open: any; }) => item.open));
+  const minClosing = getMin(arrayData.map((item: { close: any; }) => item.close));
   return minClosing < minOpening ? minClosing : minOpening;
 }
 
 export const getYmax = (arrayData:any) => {
-  const maxOpening = getMax(arrayData.map(item => item.open));
-  const maxClosing = getMax(arrayData.map(item => item.close));
+  const maxOpening = getMax(arrayData.map((item: { open: any; }) => item.open));
+  const maxClosing = getMax(arrayData.map((item: { close: any; }) => item.close));
   return maxOpening > maxClosing ? maxOpening : maxClosing;
 }
 
 export const App = () => {
   const [APIData, refreshAPIdata] = useState([]);
-  const [stockTimeFrame, updateTime] = useState([]);
+  const [stockTimeFrame, updateTime] = useState(null);
 
   useEffect(() => {
     async function getData() {
       const data =  await getIBMdata();
       refreshAPIdata(manipulateData(data));
-      updateTime(Object.values(data)[1][2])
+      try{
+        updateTime((Object.values(data)[1] as any)[2] )
+      }catch(error) {
+        console.log(error)
+      }
     }
     getData();
   }, []);
-  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric' };
 
   return <>
     <div style={{padding: "40px"}}>
       <h3>IBM stocks values / real time</h3>
-      <p>{stockTimeFrame && new Date(stockTimeFrame).toLocaleDateString("en-US", dateOptions)}</p>
+      <p>{stockTimeFrame && new Date(stockTimeFrame).toLocaleDateString("en-US",  { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric' })}</p>
       <i>5 Minutes interval</i>
             {APIData && <LineChart
               width={800}
