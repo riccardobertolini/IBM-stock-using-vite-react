@@ -65,7 +65,7 @@ export const App = () => {
       <p>{stockTimeFrame && new Date(stockTimeFrame).toLocaleDateString("en-US",  { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric' })}</p>
       <i>5 Minutes interval</i>
             {APIData && <LineChart
-              width={800}
+              width={1000}
               height={400}
               data={APIData}
             >
