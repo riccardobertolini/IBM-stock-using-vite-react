@@ -69,12 +69,12 @@ export const App = () => {
               height={400}
               data={APIData}
             >
-              <CartesianGrid strokeDasharray="1 3" />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
-              <YAxis domain={[getYmin(APIData), getYmax(APIData)]} />
+              <YAxis domain={[getYmin(APIData), getYmax(APIData)]} tick={false}  />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="open" stroke="red" fill="#8884d8"  /> 
+              <Line type="monotone" dataKey="open" stroke="red" fill="#8884d8"/> 
               <Line type="monotone" dataKey="close" stroke="grey " fill="#8884d8"  /> 
             </LineChart> }
     </div>
