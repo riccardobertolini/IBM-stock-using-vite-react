@@ -11,7 +11,7 @@ export const getIBMdata = async () => {
 
 export const manipulateData = (dataArray: any) => (
   dataArray.data.map((element: any, index:number) => ({
-    name: `${index >= 20 ? index/20 + 'hour(s)': index * 5 + 'mins'}`,
+    name: `${index >= 12 ? index/12 + 'hour(s)': index * 5 + 'mins'}`,
     //ts-ignore
     open: parseFloat(Object.values(element)[0] as any),
     close: parseFloat(Object.values(element)[3] as any)
